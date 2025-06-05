@@ -1,6 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { ApplicationConfig } from '@angular/core';
-import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { PreloadAllModules, provideRouter, withComponentInputBinding, withDebugTracing, withPreloading } from '@angular/router';
 import { provideEffects } from '@ngrx/effects';
 import { provideStore } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
@@ -10,7 +10,9 @@ import { provideRouterFeature } from './shared/logic-router-state';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(APP_ROUTES,
-      withComponentInputBinding()
+      withComponentInputBinding(),
+      // withDebugTracing(),
+      // withPreloading(PreloadAllModules)
     ),
     provideHttpClient(),
     provideStore(),
