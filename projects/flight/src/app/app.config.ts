@@ -6,6 +6,7 @@ import { provideStore } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { APP_ROUTES } from './app.routes';
 import { provideRouterFeature } from './shared/logic-router-state';
+import { provideApiBaseUrl } from './app.providers';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,6 +17,7 @@ export const appConfig: ApplicationConfig = {
     provideStore(),
     provideEffects(),
     provideRouterFeature(),
-    provideStoreDevtools()
+    provideStoreDevtools(),
+    provideApiBaseUrl('https://demo.angulararchitects.io/api')
   ]
 };

@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Flight } from '../model/flight';
+import { injectFlightApiUrl } from '../../../app.providers';
 
 
 @Injectable({
@@ -9,6 +10,7 @@ import { Flight } from '../model/flight';
 })
 export class FlightService {
   private http = inject(HttpClient);
+  private flightApiUrl = injectFlightApiUrl();
 
   flights: Flight[] = [];
   private flightsCountState = new BehaviorSubject<number>(0);
@@ -26,7 +28,7 @@ export class FlightService {
     to: string,
     urgent: boolean = false
   ): Observable<Flight[]> {
-    let url = [this.baseUrl, 'flight'].join('/');
+    let url = this.flightApiUrl;
 
     if (urgent) {
       url = [this.baseUrl, 'error?code=403'].join('/');
