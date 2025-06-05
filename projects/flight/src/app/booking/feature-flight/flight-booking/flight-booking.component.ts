@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
+import { FlightService } from '../../api-boarding';
 
 
 @Component({
@@ -11,6 +12,13 @@ import { RouterLink, RouterOutlet } from '@angular/router';
     <div>
       <router-outlet></router-outlet>
     </div>
-  `
+  `,
+  providers: [
+    FlightService
+  ]
 })
-export class FlightBookingComponent {}
+export class FlightBookingComponent {
+  constructor() {
+    inject(FlightService).findById(1).subscribe(console.log);
+  }
+}

@@ -7,6 +7,8 @@ import { MyFlightsComponent } from "./feature-flight/my-flights/my-flights.compo
 import { TicketEffects } from "./logic-flight/+state/effects";
 import { ticketFeature } from "./logic-flight/+state/reducer";
 import { resolveFlight } from "./logic-flight/data-access/flight.resolver";
+import { provideHttpClient, withInterceptors, withRequestsMadeViaParent } from "@angular/common/http";
+import { tap } from "rxjs";
 
 
 export const BOOKING_ROUTES: Routes = [
@@ -16,6 +18,14 @@ export const BOOKING_ROUTES: Routes = [
     providers: [
       provideState(ticketFeature),
       provideEffects([TicketEffects]),
+      provideHttpClient(
+        withInterceptors([
+          (req, next) => next(req).pipe(
+            tap(resp => console.log('Environment Injector Booking', resp))
+          )
+        ]),
+        withRequestsMadeViaParent()
+      )
     ],
     children: [
       {
