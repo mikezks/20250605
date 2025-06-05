@@ -7,10 +7,7 @@
 
     <div class="card-body">
 
-      <app-flight-filter
-        [filter]="filter()"
-        (searchTrigger)="search($event)"
-      >
+      <app-flight-filter [(filter)]="filter">
         <div *ngIf="flights.length" class="flight-filter-info">
           {{ flights.length }} flights found!
         </div>
