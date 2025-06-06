@@ -54,12 +54,6 @@ export class FlightCardComponent {
   readonly selected = model(false);
   readonly delayTrigger = output<Flight>();
 
-  constructor() {
-    effect(() => console.log(
-      `selected item ${ this.item().id }: ${ this.selected() }`
-    ));
-  }
-
   toggleSelection(): void {
     this.selected.update(curr => !curr);
   }

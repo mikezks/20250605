@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, signal, untracked } from '@angular/core';
-import { ReactiveNode, SIGNAL } from '@angular/core/primitives/signals';
+import { Component, computed, effect, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Flight, injectTicketsFacade } from '../../logic-flight';
 import { FlightCardComponent, FlightFilterComponent } from '../../ui-flight';
@@ -34,15 +33,8 @@ export class FlightSearchComponent {
   protected flights$ = this.ticketsFacade.flights$;
 
   constructor() {
-    let activeConsumer: ReactiveNode | null;
-    activeConsumer = effect(() => console.log(this.route()));
-
-    effect(() => {
-      this.filter();
-      untracked(() => this.search());
-    });
-
-    console.log(this.route[SIGNAL])
+    effect(() => console.log(this.route()));
+    effect(() => this.search());
   }
 
   protected search(): void {
