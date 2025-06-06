@@ -1,4 +1,4 @@
-import { NgIf } from '@angular/common';
+
 import { Component, computed, effect, inject, input, numberAttribute, ResourceStatus, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
@@ -13,10 +13,9 @@ import { httpResource } from '@angular/common/http';
 @Component({
   selector: 'app-passenger-edit',
   imports: [
-    NgIf,
     ReactiveFormsModule,
     RouterLink
-  ],
+],
   templateUrl: './passenger-edit.component.html'
 })
 export class PassengerEditComponent {
