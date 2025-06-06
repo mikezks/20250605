@@ -20,18 +20,6 @@ import { BookingStore } from '../../logic-flight/+state/booking.store';
 export class FlightSearchComponent {
   protected store = inject(BookingStore);
 
-  protected route = computed(
-    () => 'From ' + this.store.filter().from + ' to ' + this.store.filter().to + '.'
-  );
-
-  constructor() {
-    effect(() => console.log(this.route()));
-    effect(() => {
-      this.store.filter();
-      this.store.loadFlights();
-    });
-  }
-
   protected delay(flight: Flight): void {
     const oldFlight = flight;
     const oldDate = new Date(oldFlight.date);
