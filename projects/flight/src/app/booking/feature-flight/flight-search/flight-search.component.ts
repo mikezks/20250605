@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { JsonPipe, NgFor, NgIf } from '@angular/common';
 import { Component, computed, effect, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Flight, injectTicketsFacade } from '../../logic-flight';
@@ -8,7 +8,7 @@ import { FlightCardComponent, FlightFilterComponent } from '../../ui-flight';
 @Component({
   selector: 'app-flight-search',
   imports: [
-    CommonModule,
+    NgFor, NgIf, JsonPipe,
     FormsModule,
     FlightCardComponent,
     FlightFilterComponent
@@ -30,7 +30,7 @@ export class FlightSearchComponent {
     3: true,
     5: true
   };
-  protected flights$ = this.ticketsFacade.flights$;
+  protected flights = this.ticketsFacade.flights;
 
   constructor() {
     effect(() => console.log(this.route()));
