@@ -1,5 +1,5 @@
 import { DatePipe, NgStyle } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, EventEmitter, Output, effect, inject, input, model, output, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, EventEmitter, Output, afterNextRender, effect, inject, input, model, output, signal, untracked } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { injectCdBlink } from '../../../shared/util-cd-visualizer';
 import { Flight } from '../../logic-flight';
@@ -15,7 +15,10 @@ import { Flight } from '../../logic-flight';
   template: `
     <div
       class="card"
-      [ngStyle]="{ 'background-color': selected() ? 'rgb(204, 197, 185)' : 'white' }"
+      [ngStyle]="{ 'background-color': hydrated()
+        ? selected() ? 'rgb(204, 197, 185)' : 'white'
+        : 'grey'        
+      }"
     >
       <div class="card-header">
         <h2 class="card-title">{{ item().from }} - {{ item().to }}</h2>
@@ -54,6 +57,7 @@ export class FlightCardComponent {
   readonly item = input.required<Flight>();
   readonly selected = model(false);
   readonly delayTrigger = output<Flight>();
+  readonly hydrated = signal(false);
 
   constructor() {
     const loggingEffectRef = effect(() => {
@@ -63,6 +67,7 @@ export class FlightCardComponent {
     this.destroyRef.onDestroy(
       () => console.log('Flight Card DESTROY', this.item().id)
     );
+    afterNextRender(() => this.hydrated.set(true));
   }
 
   toggleSelection(): void {

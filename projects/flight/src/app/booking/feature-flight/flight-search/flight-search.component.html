@@ -24,7 +24,7 @@
   </div>
 </div>
 
-@defer (on interaction(flightFilter)) {
+@defer (hydrate on interaction) {
   <div class="row">
     @for (flight of flights; track flight.id; let last = $last) {
       <div class="col-xs-12 col-sm-6 col-md-4">
@@ -36,6 +36,8 @@
       </div>
     }  
   </div>
+} @placeholder {
+  <p>The flight result will be shown at the right time - relax.</p>
 }
 
 @defer (on timer(5s)) {
