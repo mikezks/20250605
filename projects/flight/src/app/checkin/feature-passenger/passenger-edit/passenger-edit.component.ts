@@ -2,11 +2,12 @@ import { NgIf } from '@angular/common';
 import { Component, computed, effect, inject, input, numberAttribute, ResourceStatus, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { initialPassenger } from '../../logic-passenger';
+import { initialPassenger, Passenger } from '../../logic-passenger';
 import { PassengerService } from '../../logic-passenger/data-access/passenger.service';
 import { validatePassengerStatus } from '../../util-validation';
 import { switchMap } from 'rxjs';
 import { RouterLink } from '@angular/router';
+import { httpResource } from '@angular/common/http';
 
 
 @Component({
@@ -31,7 +32,12 @@ export class PassengerEditComponent {
   });
 
   readonly id = input(0, { transform: numberAttribute });
-  protected readonly passengerResource = this.passengerService.findByIdAsResource(this.id);
+  protected readonly passengerResource = httpResource<Passenger>(() => ({
+    url: 'https://demo.angulararchitects.io/api/passenger',
+    params: {
+      id: this.id()
+    }
+  }));
   protected readonly passengerResStatus = computed(
     () => ResourceStatus[this.passengerResource.status()]
   );
