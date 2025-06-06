@@ -1,4 +1,4 @@
-import { JsonPipe, NgFor, NgIf } from '@angular/common';
+import { JsonPipe } from '@angular/common';
 import { Component, computed, effect, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Flight, injectTicketsFacade } from '../../logic-flight';
@@ -8,7 +8,7 @@ import { FlightCardComponent, FlightFilterComponent } from '../../ui-flight';
 @Component({
   selector: 'app-flight-search',
   imports: [
-    NgFor, NgIf, JsonPipe,
+    JsonPipe,
     FormsModule,
     FlightCardComponent,
     FlightFilterComponent

@@ -56,9 +56,10 @@ export class FlightCardComponent {
   readonly delayTrigger = output<Flight>();
 
   constructor() {
-    effect(untracked(() => 
-      () => console.log('Flight Card INIT', this.item().id)
-    ));
+    const loggingEffectRef = effect(() => {
+      console.log('Flight Card INIT', this.item().id);
+      loggingEffectRef.destroy();
+    });
     this.destroyRef.onDestroy(
       () => console.log('Flight Card DESTROY', this.item().id)
     );
