@@ -65,7 +65,8 @@ export const BookingStore = signalStore(
     })),
     on(flightEvents.flightDelayTriggered, ({ payload: delayState }) => 
       updateEntity({ id: delayState.id, changes: flight => ({
-        date: addMinutes(flight.date, delayState.delayInMin)
+        date: addMinutes(flight.date, delayState.delayInMin),
+        delayed: true
       })}, flightConfig)
     ),
   ),
