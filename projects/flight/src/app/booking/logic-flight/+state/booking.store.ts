@@ -6,7 +6,8 @@ import { FlightService } from "../data-access/flight.service";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import { tapResponse } from "@ngrx/operators";
 import { pipe, switchMap } from "rxjs";
-import { setAllEntities, setEntity, withEntities } from "@ngrx/signals/entities";
+import { entityConfig, setAllEntities, setEntity, updateEntity, withEntities } from "@ngrx/signals/entities";
+import { addMinutes } from "../../../shared/util-date";
 
 
 interface BookingState {
@@ -46,11 +47,19 @@ const flightEntityState = {
   ids: [5, 3]
 };
 
+const flightConfig = entityConfig({
+  entity: type<Flight>(),
+  collection: 'flight'
+});
+
 
 export const BookingStore = signalStore(
+  // Provider
   { providedIn: 'root' },
+  // State
   withState(initialBookingState),
-  withEntities({ entity: type<Flight>(), collection: 'flight' }),
+  withEntities(flightConfig),
+  // Selectors / Derived State
   withComputed(store => ({
     delayedFlights: computed(
       () => store.flightEntities().filter(flight => flight.delayed)
@@ -59,13 +68,19 @@ export const BookingStore = signalStore(
       () => 'From ' + store.filter().from + ' to ' + store.filter().to + '.'
     )
   })),
+  // Updaters
   withMethods(store => ({
     setFilter: (filter: FlightFilter) => patchState(store, { filter }),
     setFlight: (flight: Flight) => patchState(store, 
-      setEntity(flight, { collection: 'flight' })
+      setEntity(flight, flightConfig)
     ),
     setFlights: (flights: Flight[]) => patchState(store, 
-      setAllEntities(flights, { collection: 'flight' })
+      setAllEntities(flights, flightConfig)
+    ),
+    addFlightDelay: (id: number, delayInMin: number) => patchState(store, 
+      updateEntity({ id, changes: flight => ({
+        date: addMinutes(flight.date, delayInMin)
+      })}, flightConfig)
     ),
     updateBasket: (id: number, selected: boolean) => patchState(store, state => ({
       basket: {
@@ -74,6 +89,7 @@ export const BookingStore = signalStore(
       }
     })),
   })),
+  // Side-Effects
   withMethods((
     store,
     flightService = inject(FlightService)
@@ -88,6 +104,7 @@ export const BookingStore = signalStore(
       })
     ))
   })),
+  // Store Lifecycle
   withHooks(store => ({
     onInit: () => store.loadFlights(store.filter)
   })),

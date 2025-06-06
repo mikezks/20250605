@@ -20,12 +20,4 @@ import { addMinutes } from '../../../shared/util-date';
 })
 export class FlightSearchComponent {
   protected store = inject(BookingStore);
-
-  protected delay(flight: Flight): void {
-    this.store.setFlight({
-      ...flight,
-      date: addMinutes(flight.date, 5),
-      delayed: true
-    });
-  }
 }
