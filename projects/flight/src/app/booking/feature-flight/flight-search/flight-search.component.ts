@@ -1,11 +1,11 @@
 import { JsonPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Flight } from '../../api-boarding';
+import { injectDispatch } from '@ngrx/signals/events';
 import { BookingStore } from '../../logic-flight';
+import { flightEvents } from '../../logic-flight/+state/flight.events';
 import { FlightFilterComponent } from '../../ui-flight';
 import { FlightCardComponent } from '../../ui-flight/flight-card/flight-card.component';
-import { addMinutes } from '../../../shared/util-date';
 
 
 @Component({
@@ -20,4 +20,5 @@ import { addMinutes } from '../../../shared/util-date';
 })
 export class FlightSearchComponent {
   protected store = inject(BookingStore);
+  protected flightEvents = injectDispatch(flightEvents);
 }

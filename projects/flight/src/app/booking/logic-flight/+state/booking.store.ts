@@ -1,12 +1,13 @@
-import { patchState, signalStore, type, withComputed, withHooks, withMethods, withState } from "@ngrx/signals";
-import { Flight } from "../model/flight";
 import { computed, inject } from "@angular/core";
-import { FlightFilter } from "../model/flight-filter";
+import { mapResponse } from "@ngrx/operators";
+import { signalStore, type, withComputed, withState } from "@ngrx/signals";
+import { entityConfig, removeAllEntities, setAllEntities, setEntity, updateEntity, withEntities } from "@ngrx/signals/entities";
+import { Events, on, withEffects, withReducer } from "@ngrx/signals/events";
+import { switchMap } from "rxjs";
 import { FlightService } from "../data-access/flight.service";
-import { rxMethod } from "@ngrx/signals/rxjs-interop";
-import { tapResponse } from "@ngrx/operators";
-import { pipe, switchMap } from "rxjs";
-import { entityConfig, setAllEntities, setEntity, updateEntity, withEntities } from "@ngrx/signals/entities";
+import { Flight } from "../model/flight";
+import { FlightFilter } from "../model/flight-filter";
+import { flightEvents } from "./flight.events";
 import { addMinutes } from "../../../shared/util-date";
 
 
@@ -25,26 +26,6 @@ const initialBookingState: BookingState = {
     3: true,
     5: true, 
   },
-};
-
-const flightEntityState = {
-  entities: {
-    3: {
-      id: 3,
-      from: 'Hamburg',
-      to: 'Graz',
-      date: '2025-06-06',
-      delayed: false
-    },
-    5: {
-      id: 5,
-      from: 'Hamburg',
-      to: 'Graz',
-      date: '2025-06-06',
-      delayed: false
-    }
-  },
-  ids: [5, 3]
 };
 
 const flightConfig = entityConfig({
@@ -68,44 +49,42 @@ export const BookingStore = signalStore(
       () => 'From ' + store.filter().from + ' to ' + store.filter().to + '.'
     )
   })),
-  // Updaters
-  withMethods(store => ({
-    setFilter: (filter: FlightFilter) => patchState(store, { filter }),
-    setFlight: (flight: Flight) => patchState(store, 
-      setEntity(flight, flightConfig)
-    ),
-    setFlights: (flights: Flight[]) => patchState(store, 
-      setAllEntities(flights, flightConfig)
-    ),
-    addFlightDelay: (id: number, delayInMin: number) => patchState(store, 
-      updateEntity({ id, changes: flight => ({
-        date: addMinutes(flight.date, delayInMin)
-      })}, flightConfig)
-    ),
-    updateBasket: (id: number, selected: boolean) => patchState(store, state => ({
+  // Reducer / Updater
+  withReducer(
+    on(flightEvents.flightFilterChanged, ({ payload: filter }) => ({ filter })),
+    on(flightEvents.flightsChanged, ({ payload: flights }) =>
+      setAllEntities(flights, flightConfig)),
+    on(flightEvents.flightResetTriggered, () => removeAllEntities(flightConfig)),
+    on(flightEvents.flightChanged, ({ payload: flight }) =>
+      setEntity(flight, flightConfig)),
+    on(flightEvents.basketChanged, ({ payload: updateBasket }) => state => ({
       basket: {
         ...state.basket,
-        [id]: selected
+        [updateBasket.id]: updateBasket.selected
       }
     })),
-  })),
+    on(flightEvents.flightDelayTriggered, ({ payload: delayState }) => 
+      updateEntity({ id: delayState.id, changes: flight => ({
+        date: addMinutes(flight.date, delayState.delayInMin)
+      })}, flightConfig)
+    ),
+  ),
   // Side-Effects
-  withMethods((
+  withEffects((
     store,
+    events = inject(Events),
     flightService = inject(FlightService)
   ) => ({
-    loadFlights: rxMethod<FlightFilter>(pipe(
-      switchMap(filter => flightService.find(
-        filter.from, filter.to,filter.urgent
-      )),
-      tapResponse({
-        next: flights => store.setFlights(flights),
-        error: err => console.error(err)
-      })
-    ))
-  })),
-  // Store Lifecycle
-  withHooks(store => ({
-    onInit: () => store.loadFlights(store.filter)
+    loadFlights$: events
+      .on(flightEvents.flightFilterChanged)
+      .pipe(
+        switchMap(({ payload: filter }) => flightService.find(
+          filter.from, filter.to,filter.urgent
+        )),
+        mapResponse({
+          next: flights => flightEvents.flightsChanged(flights),
+          error: err => flightEvents.flightChangedError(err)
+        })
+      )
   })),
 );
