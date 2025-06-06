@@ -1,9 +1,10 @@
 import { JsonPipe } from '@angular/common';
-import { Component, computed, effect } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Flight, FlightFilter, injectTicketsFacade } from '../../logic-flight';
 import { FlightFilterComponent } from '../../ui-flight';
 import { FlightCardComponent } from '../../ui-flight/flight-card/flight-card.component';
+import { BookingStore } from '../../logic-flight/+state/booking.store';
 
 
 @Component({
@@ -17,26 +18,18 @@ import { FlightCardComponent } from '../../ui-flight/flight-card/flight-card.com
   templateUrl: './flight-search.component.html',
 })
 export class FlightSearchComponent {
-  private ticketsFacade = injectTicketsFacade();
+  protected store = inject(BookingStore);
 
-  protected filter = this.ticketsFacade.filter;
   protected route = computed(
-    () => 'From ' + this.filter().from + ' to ' + this.filter().to + '.'
+    () => 'From ' + this.store.filter().from + ' to ' + this.store.filter().to + '.'
   );
-  protected basket = this.ticketsFacade.basket;
-  protected flights = this.ticketsFacade.flights
 
   constructor() {
     effect(() => console.log(this.route()));
-    effect(() => this.search());
-  }
-
-  protected search(): void {
-    if (!this.filter().from || !this.filter().to) {
-      return;
-    }
-
-    this.ticketsFacade.search();
+    effect(() => {
+      this.store.filter();
+      this.store.loadFlights();
+    });
   }
 
   protected delay(flight: Flight): void {
@@ -50,18 +43,6 @@ export class FlightSearchComponent {
       delayed: true
     };
 
-    this.ticketsFacade.updateFlight(newFlight);
-  }
-
-  protected updateFilter(filter: FlightFilter): void {
-    this.ticketsFacade.updateFilter(filter);
-  }
-
-  protected updateBasket(id: number, selected: boolean): void {
-    this.ticketsFacade.updateBasket(id, selected);
-  }
-
-  protected reset(): void {
-    this.ticketsFacade.reset();
+    // this.store.
   }
 }
