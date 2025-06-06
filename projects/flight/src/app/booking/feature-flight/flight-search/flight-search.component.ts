@@ -1,10 +1,11 @@
 import { JsonPipe } from '@angular/common';
-import { Component, computed, effect, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Flight, FlightFilter, injectTicketsFacade } from '../../logic-flight';
+import { Flight } from '../../api-boarding';
+import { BookingStore } from '../../logic-flight';
 import { FlightFilterComponent } from '../../ui-flight';
 import { FlightCardComponent } from '../../ui-flight/flight-card/flight-card.component';
-import { BookingStore } from '../../logic-flight/+state/booking.store';
+import { addMinutes } from '../../../shared/util-date';
 
 
 @Component({
@@ -21,16 +22,10 @@ export class FlightSearchComponent {
   protected store = inject(BookingStore);
 
   protected delay(flight: Flight): void {
-    const oldFlight = flight;
-    const oldDate = new Date(oldFlight.date);
-
-    const newDate = new Date(oldDate.getTime() + 1000 * 60 * 5); // Add 5 min
-    const newFlight = {
-      ...oldFlight,
-      date: newDate.toISOString(),
+    this.store.setFlight({
+      ...flight,
+      date: addMinutes(flight.date, 5),
       delayed: true
-    };
-
-    // this.store.
+    });
   }
 }
