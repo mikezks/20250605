@@ -35,6 +35,31 @@ export class FlightSearchComponent {
   constructor() {
     effect(() => console.log(this.route()));
     effect(() => this.search());
+
+    console.log(this.filter().from);
+    this.filter.update(curr => ({ ...curr, from: 'Barcelona' }));
+    console.log(this.filter().from);
+    this.filter.update(curr => ({ ...curr, from: 'Rome' }));
+    console.log(this.filter().from);
+    this.filter.update(curr => ({ ...curr, from: 'Los Angeles' }));
+    console.log(this.filter().from);
+    this.filter.update(curr => ({ ...curr, from: 'Rio' }));
+    console.log(this.filter().from);
+    this.filter.update(curr => ({ ...curr, from: 'Capetown' }));
+    console.log(this.filter().from);
+    this.filter.update(curr => ({ ...curr, from: 'Delhi' }));
+    console.log(this.filter().from);
+
+    // Glitch-free Behavior
+    const counter = signal(0);
+    const isEven = computed(() => counter() % 2 === 0);
+    effect(() => console.log({
+      counter: counter(),
+      isEven: isEven()
+    }));
+    function incrementCounter(): void {
+      counter.update(curr => curr + 1);
+    }
   }
 
   protected search(): void {
