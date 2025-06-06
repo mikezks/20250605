@@ -12,7 +12,7 @@ export function injectTicketsFacade() {
     basket: store.basket,
     flights: store.flights,
     search: () => {
-      store.loadFlights();
+      store.loadFlights(store.filter);
     },
     updateFilter: (filter: FlightFilter) => store.setFilter(filter),
     updateBasket: (id: number, selected: boolean) => store.updateBasket(id, selected),
