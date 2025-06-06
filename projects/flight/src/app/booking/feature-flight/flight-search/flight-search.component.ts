@@ -2,7 +2,8 @@ import { JsonPipe } from '@angular/common';
 import { Component, computed, effect, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Flight, injectTicketsFacade } from '../../logic-flight';
-import { FlightCardComponent, FlightFilterComponent } from '../../ui-flight';
+import { FlightFilterComponent } from '../../ui-flight';
+import { FlightCardComponent } from '../../ui-flight/flight-card/flight-card.component';
 
 
 @Component({

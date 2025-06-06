@@ -7,7 +7,7 @@
 
   <div class="card-body">
 
-    <app-flight-filter [(filter)]="filter">
+    <app-flight-filter [(filter)]="filter" #flightFilter>
       @if (flights.length) {
         <div class="flight-filter-info">
           {{ flights.length }} flights found!
@@ -24,25 +24,30 @@
   </div>
 </div>
 
-<div class="row">
-  @for (flight of flights; track flight.id; let last = $last) {
-    <div class="col-xs-12 col-sm-6 col-md-4">
-      <app-flight-card
-        [item]="flight"
-        [(selected)]="basket[flight.id]"
-        (delayTrigger)="delay($event)"
-      />
+@defer (on interaction(flightFilter)) {
+  <div class="row">
+    @for (flight of flights; track flight.id; let last = $last) {
+      <div class="col-xs-12 col-sm-6 col-md-4">
+        <app-flight-card
+          [item]="flight"
+          [(selected)]="basket[flight.id]"
+          (delayTrigger)="delay($event)"
+        />
+      </div>
+    }  
+  </div>
+}
+
+@defer (on timer(5s)) {
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Basket</h2>
     </div>
-  }
   
-</div>
-
-<div class="card">
-  <div class="card-header">
-    <h2 class="card-title">Basket</h2>
+    <div class="card-body">
+      <pre>{{ basket | json }}</pre>
+    </div>
   </div>
-
-  <div class="card-body">
-    <pre>{{ basket | json }}</pre>
-  </div>
-</div>
+} @placeholder {
+  The basket will be shown at the right time - relax.
+}
