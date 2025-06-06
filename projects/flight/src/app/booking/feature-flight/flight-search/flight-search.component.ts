@@ -31,10 +31,12 @@ export class FlightSearchComponent {
     5: true
   };
   protected flights = this.ticketsFacade.flights;
+  protected firstname = 'Sarah';
 
   constructor() {
     effect(() => console.log(this.route()));
     effect(() => this.search());
+    setTimeout(() => this.firstname = 'Peter', 3_000);
   }
 
   protected search(): void {
